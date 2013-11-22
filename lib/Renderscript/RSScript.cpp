@@ -73,12 +73,13 @@ bool RSScript::LinkRuntime(RSScript &pScript, const char *rt_path) {
 
 RSScript::RSScript(Source &pSource)
   : Script(pSource), mInfo(NULL), mCompilerVersion(0),
-    mOptimizationLevel(kOptLvl3), mLinkRuntimeCallback(NULL),
+    mOptimizationLevel(kOptLvl3), mPreferredLibrary(NULL) { }
     mEmbedInfo(false) { }
 
 bool RSScript::doReset() {
   mInfo = NULL;
   mCompilerVersion = 0;
   mOptimizationLevel = kOptLvl3;
+  mPreferredLibrary = NULL;
   return true;
 }

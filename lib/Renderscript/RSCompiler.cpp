@@ -16,6 +16,7 @@
 
 #include "bcc/Renderscript/RSCompiler.h"
 
+#include <llvm/ADT/Triple.h>
 #include <llvm/IR/Module.h>
 #include <llvm/PassManager.h>
 #include <llvm/Transforms/IPO.h>
@@ -105,17 +106,20 @@ bool RSCompiler::addExpandForEachPass(Script &pScript, llvm::PassManager &pPM) {
     return false;
   }
 
-  // Expand ForEach on CPU path to reduce launch overhead.
-  bool pEnableStepOpt = true;
-  pPM.add(createRSForEachExpandPass(info->getExportForeachFuncs(),
-                                    pEnableStepOpt));
+  // Expand ForEach on CPU path to reduce launch overhead
+  // (if not compiling for PVR).
+  if (strncmp(mTriple, llvm::Triple::getArchTypeName(llvm::Triple::usc), 3))
+    rs_passes.add(createRSForEachExpandPass(info->getExportForeachFuncs(),
+                                            /* pEnableStepOpt */ true));
   if (script.getEmbedInfo())
     pPM.add(createRSEmbedInfoPass(info));
 
   return true;
 }
 
-bool RSCompiler::beforeAddLTOPasses(Script &pScript, llvm::PassManager &pPM) {
+  bool RSCompiler::beforeAddLTOPasses(Script &pScript,
+                                    llvm::PassManager &pPM,
+                                    const char *mTriple) {
   if (!addExpandForEachPass(pScript, pPM))
     return false;
 

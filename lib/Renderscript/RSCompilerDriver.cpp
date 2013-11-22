@@ -20,6 +20,7 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Path.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/PluginLoader.h>
 
 #include "bcinfo/BitcodeWrapper.h"
 
@@ -35,6 +36,7 @@
 #include "bcc/Support/Initialization.h"
 #include "bcc/Support/Sha1Util.h"
 #include "bcc/Support/OutputFile.h"
+
 
 #ifdef HAVE_ANDROID_OS
 #include <cutils/properties.h>
@@ -56,7 +58,7 @@ RSCompilerDriver::RSCompilerDriver(bool pUseCompilerRT) :
   mResolver.chainResolver(mRSRuntime);
 }
 
-RSCompilerDriver::~RSCompilerDriver() {
+RSCompilerDriver::RSCompilerDriver() : mConfig(NULL), mCompiler(), mDefaultTriple(NULL), mDefaultLibrary(NULL) {
   delete mCompilerRuntime;
   delete mConfig;
 }
@@ -148,6 +150,11 @@ RSCompilerDriver::loadScript(const char *pCacheDir, const char *pResName,
   }
 
   return result;
+}
+
+void
+RSCompilerDriver::loadPlugin(const char *pLibName) {
+  llvm::PluginLoader() = pLibName;
 }
 
 #if defined(DEFAULT_ARM_CODEGEN)

@@ -104,6 +104,12 @@ public:
   bool getEmbedInfo() const {
     return mEmbedInfo;
   }
+  
+  void setPreferredLibrary(const char *pPreferredLibrary)
+  { mPreferredLibrary = pPreferredLibrary; }
+
+  const char *getPreferredLibrary() const
+  { return mPreferredLibrary; }
 };
 
 } // end namespace bcc
