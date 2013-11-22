@@ -1,0 +1,28 @@
+--- lib/Renderscript/RSCompilerDriver.cpp
++++ lib/Renderscript/RSCompilerDriver.cpp
+@@ -17,6 +17,7 @@
+ #include "bcc/Renderscript/RSCompilerDriver.h"
+ 
+ #include <llvm/Support/Path.h>
++#include <llvm/Support/PluginLoader.h>
+ 
+ #include "bcinfo/BitcodeWrapper.h"
+ 
+@@ -60,7 +61,7 @@
+ 
+ } // end anonymous namespace
+ 
+-RSCompilerDriver::RSCompilerDriver() : mConfig(NULL), mCompiler() {
++RSCompilerDriver::RSCompilerDriver() : mConfig(NULL), mCompiler(), mDefaultTriple(NULL), mDefaultLibrary(NULL) {
+   init::Initialize();
+   // Chain the symbol resolvers for BCC runtimes and RS runtimes.
+   mResolver.chainResolver(mBCCRuntime);
+@@ -411,3 +419,8 @@
+ 
+   return result;
+ }
++
++void
++RSCompilerDriver::loadPlugin(const char *pLibName) {
++  llvm::PluginLoader() = pLibName;
++}

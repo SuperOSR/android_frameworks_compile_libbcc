@@ -1,0 +1,15 @@
+--- include/bcc/Renderscript/RSScript.h
++++ include/bcc/Renderscript/RSScript.h
+@@ -73,6 +75,12 @@
+ 
+   OptimizationLevel getOptimizationLevel() const
+   {  return mOptimizationLevel; }
++
++  void setPreferredLibrary(const char *pPreferredLibrary)
++  { mPreferredLibrary = pPreferredLibrary; }
++
++  const char *getPreferredLibrary() const
++  { return mPreferredLibrary; }
+ };
+ 
+ } // end namespace bcc
