@@ -97,6 +97,10 @@ ifeq ($(ARCH_ARM_HAVE_NEON),true)
   LOCAL_REQUIRED_MODULES += libclcore_neon.bc
 endif
 
+ifeq ($(TARGET_BOARD_PLATFORM), fiber)
+    LOCAL_CFLAGS += -DTARGET_BOARD_FIBER
+endif
+
 # Generate build information (Build time + Build git revision + Build Semi SHA1)
 include $(LIBBCC_ROOT_PATH)/libbcc-gen-build-info.mk
 
