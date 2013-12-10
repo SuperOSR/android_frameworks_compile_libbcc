@@ -111,9 +111,13 @@ protected:
   // Plugin callbacks for sub-class.
   //===--------------------------------------------------------------------===//
   // Called before adding first pass to code-generation passes.
+#ifdef TARGET_BOARD_FIBER
   virtual bool beforeAddLTOPasses(Script &pScript,
                                   llvm::PassManager &pPM,
                                   const char *mTriple)
+#else
+  virtual bool beforeAddLTOPasses(Script &pScript, llvm::PassManager &pPM)
+#endif
   { return true; }
 
   // Called after adding last pass to code-generation passes.
@@ -121,9 +125,14 @@ protected:
   { return true; }
 
   // Called before executing code-generation passes.
+#ifdef TARGET_BOARD_FIBER
   virtual bool beforeExecuteLTOPasses(Script &pScript,
                                       llvm::PassManager &pPM,
                                       const char *mTriple)
+#else
+  virtual bool beforeExecuteLTOPasses(Script &pScript,
+                                          llvm::PassManager &pPM)
+#endif
   { return true; }
 
   // Called after executing code-generation passes.

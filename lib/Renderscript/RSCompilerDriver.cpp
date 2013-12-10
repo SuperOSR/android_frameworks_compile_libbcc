@@ -20,7 +20,9 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Path.h>
 #include <llvm/Support/raw_ostream.h>
+#ifdef TARGET_BOARD_FIBER
 #include <llvm/Support/PluginLoader.h>
+#endif
 
 #include "bcinfo/BitcodeWrapper.h"
 
@@ -36,7 +38,6 @@
 #include "bcc/Support/Initialization.h"
 #include "bcc/Support/Sha1Util.h"
 #include "bcc/Support/OutputFile.h"
-
 
 #ifdef HAVE_ANDROID_OS
 #include <cutils/properties.h>
@@ -58,7 +59,7 @@ RSCompilerDriver::RSCompilerDriver(bool pUseCompilerRT) :
   mResolver.chainResolver(mRSRuntime);
 }
 
-RSCompilerDriver::RSCompilerDriver() : mConfig(NULL), mCompiler(), mDefaultTriple(NULL), mDefaultLibrary(NULL) {
+RSCompilerDriver::~RSCompilerDriver() {
   delete mCompilerRuntime;
   delete mConfig;
 }
@@ -152,10 +153,12 @@ RSCompilerDriver::loadScript(const char *pCacheDir, const char *pResName,
   return result;
 }
 
+#ifdef TARGET_BOARD_FIBER
 void
 RSCompilerDriver::loadPlugin(const char *pLibName) {
   llvm::PluginLoader() = pLibName;
 }
+#endif
 
 #if defined(DEFAULT_ARM_CODEGEN)
 extern llvm::cl::opt<bool> EnableGlobalMerge;
@@ -176,10 +179,12 @@ bool RSCompilerDriver::setupConfig(const RSScript &pScript) {
     }
   } else {
     // Haven't run the compiler ever.
+#ifdef TARGET_BOARD_FIBER
     if (mDefaultTriple) // Preference the default triple if set through setRSDefaultCompilerTriple
       mConfig = new (std::nothrow) CompilerConfig(mDefaultTriple);
     else
-      mConfig = new (std::nothrow) DefaultCompilerConfig();
+#endif
+    mConfig = new (std::nothrow) DefaultCompilerConfig();
     if (mConfig == NULL) {
       // Return false since mConfig remains NULL and out-of-memory.
       return false;
@@ -214,10 +219,12 @@ RSCompilerDriver::compileScript(RSScript &pScript,
   //android::StopWatch compile_time("bcc: RSCompilerDriver::compileScript time");
   RSInfo *info = NULL;
 
+#ifdef TARGET_BOARD_FIBER
   if (mDefaultLibrary) {
 	pScript.setPreferredLibrary(mDefaultLibrary);
   }
-  
+#endif  
+
   //===--------------------------------------------------------------------===//
   // Extract RS-specific information from source bitcode.
   //===--------------------------------------------------------------------===//
@@ -430,6 +437,11 @@ bool RSCompilerDriver::build(BCCContext &pContext,
   return true;
 }
 
+#ifdef TARGET_BOARD_FIBER
+void RSCompilerDriver::loadPlugin(const char *pLibName) {
+  llvm::PluginLoader() = pLibName;
+}
+#endif
 
 bool RSCompilerDriver::build(RSScript &pScript, const char *pOut,
                              const char *pRuntimePath) {

@@ -42,7 +42,9 @@ public:
     kOptLvl3  // -O3
   };
 
+#ifdef TARGET_BOARD_FIBER
   const char *mPreferredLibrary;
+#endif
 
 private:
   const RSInfo *mInfo;
@@ -104,12 +106,14 @@ public:
   bool getEmbedInfo() const {
     return mEmbedInfo;
   }
-  
+
+#ifdef TARGET_BOARD_FIBER  
   void setPreferredLibrary(const char *pPreferredLibrary)
   { mPreferredLibrary = pPreferredLibrary; }
 
   const char *getPreferredLibrary() const
   { return mPreferredLibrary; }
+#endif
 };
 
 } // end namespace bcc

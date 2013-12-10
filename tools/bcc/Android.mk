@@ -33,6 +33,10 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
   $(LOCAL_PATH)/../../include
 
+ifeq ($(TARGET_BOARD_PLATFORM), fiber)
+    LOCAL_CFLAGS += -DTARGET_BOARD_FIBER
+endif
+
 LOCAL_LDLIBS = -ldl
 
 include $(LIBBCC_HOST_BUILD_MK)
@@ -44,7 +48,12 @@ include $(BUILD_HOST_EXECUTABLE)
 # ========================================================
 include $(CLEAR_VARS)
 
-LOCAL_STATIC_LIBRARIES := libLLVMSupport
+
+ifeq ($(TARGET_BOARD_PLATFORM), fiber)
+    LOCAL_CFLAGS += -DTARGET_BOARD_FIBER
+    LOCAL_STATIC_LIBRARIES := libLLVMSupport
+endif
+
 LOCAL_MODULE := bcc
 LOCAL_MODULE_CLASS := EXECUTABLES
 

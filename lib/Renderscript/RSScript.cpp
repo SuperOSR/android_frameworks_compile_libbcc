@@ -27,8 +27,8 @@ bool RSScript::LinkRuntime(RSScript &pScript, const char *rt_path) {
   BCCContext &context = pScript.getSource().getContext();
   const char* core_lib = RSInfo::LibCLCorePath;
 
-  // SSE2- or above capable devices will use an optimized library.
-#if defined(ARCH_X86_HAVE_SSE2)
+  // x86 devices will use an optimized library.
+#if defined(__i386__)
   core_lib = RSInfo::LibCLCoreX86Path;
 #endif
 
@@ -46,9 +46,11 @@ bool RSScript::LinkRuntime(RSScript &pScript, const char *rt_path) {
     core_lib = rt_path;
   }
 
+#ifdef TARGET_BOARD_FIBER
   if (pScript.getPreferredLibrary()) {
     core_lib = pScript.getPreferredLibrary();
   }
+#endif
 
   Source *libclcore_source = Source::CreateFromFile(context, core_lib);
   if (libclcore_source == NULL) {
@@ -73,13 +75,19 @@ bool RSScript::LinkRuntime(RSScript &pScript, const char *rt_path) {
 
 RSScript::RSScript(Source &pSource)
   : Script(pSource), mInfo(NULL), mCompilerVersion(0),
+#ifdef TARGET_BOARD_FIBER
     mOptimizationLevel(kOptLvl3), mPreferredLibrary(NULL) { }
+#else
+    mOptimizationLevel(kOptLvl3), mLinkRuntimeCallback(NULL),
+#endif
     mEmbedInfo(false) { }
 
 bool RSScript::doReset() {
   mInfo = NULL;
   mCompilerVersion = 0;
   mOptimizationLevel = kOptLvl3;
+#ifdef TARGET_BOARD_FIBER
   mPreferredLibrary = NULL;
+#endif
   return true;
 }

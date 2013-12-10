@@ -89,8 +89,10 @@ public:
   inline void *getSymbolAddress(const char *pName) const
   { return mLoader->getSymbolAddress(pName); }
 
+#ifdef TARGET_BOARD_FIBER
   size_t retrieveObjFileSize() const;
   bool   retrieveObjFile(void *pDst, size_t uDataLen);
+#endif
 
   bool syncInfo(bool pForce = false);
 

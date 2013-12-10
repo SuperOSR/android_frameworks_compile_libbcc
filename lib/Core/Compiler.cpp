@@ -163,8 +163,12 @@ enum Compiler::ErrorCode Compiler::runLTO(Script &pScript) {
   lto_passes.add(data_layout);
 
   // Invoke "beforeAddLTOPasses" before adding the first pass.
+#ifdef TARGET_BOARD_FIBER
   if (!beforeAddLTOPasses(pScript, lto_passes,
                           mTarget->getTargetTriple().data())) {
+#else
+  if (!beforeAddLTOPasses(pScript, lto_passes)) {
+#endif
     return kErrHookBeforeAddLTOPasses;
   }
 
@@ -233,9 +237,11 @@ enum Compiler::ErrorCode Compiler::runCodeGen(Script &pScript,
     return kErrHookBeforeExecuteCodeGenPasses;
   }
   
+#ifdef TARGET_BOARD_FIBER
   if (!beforeExecuteLTOPasses(pScript, lto_passes, mTarget->getTargetTriple().data())) {
      return kErrHookBeforeExecuteLTOPasses;
   }
+#endif
 
   // Execute the pass.
   codegen_passes.run(pScript.getSource().getModule());

@@ -23,7 +23,9 @@
 #include "bcc/Support/Log.h"
 
 #include "ELFObjectLoaderImpl.h"
+#ifdef TARGET_BOARD_FIBER
 #include "USCObjectLoaderImpl.h"
+#endif
 
 using namespace bcc;
 
@@ -50,6 +52,7 @@ ObjectLoader *ObjectLoader::Load(void *pMemStart, size_t pMemSize,
   // Currently, only ELF object loader is supported. Therefore, there's no codes
   // to detect the object file type and to select the one appropriated. Directly
   // try out the ELF object loader.
+#ifdef TARGET_BOARD_FIBER
   if (memcmp(pMemStart, "\x7f" "ELF", 4) == 0)
     result->mImpl = new (std::nothrow) ELFObjectLoaderImpl();
   else if(memcmp(pMemStart, "RSC ", 4) == 0)
@@ -59,6 +62,9 @@ ObjectLoader *ObjectLoader::Load(void *pMemStart, size_t pMemSize,
     result->mImpl = NULL;
   }
 
+#else
+  result->mImpl = new (std::nothrow) ELFObjectLoaderImpl();
+#endif
   if (result->mImpl == NULL) {
     ALOGE("Out of memory when create ELF object loader for %s", pName);
     goto bail;

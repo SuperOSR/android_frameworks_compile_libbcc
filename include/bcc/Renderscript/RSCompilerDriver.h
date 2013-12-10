@@ -34,8 +34,10 @@ class RSCompilerDriver {
 private:
   CompilerConfig *mConfig;
   RSCompiler mCompiler;
+#ifdef TARGET_BOARD_FIBER
   const char *mDefaultTriple;
   const char *mDefaultLibrary;
+#endif
 
   CompilerRTSymbolResolver *mCompilerRuntime;
   LookupFunctionSymbolResolver<void*> mRSRuntime;
@@ -71,11 +73,13 @@ public:
   { mRSRuntime.setLookupFunction(pLookupFunc); }
   inline void setRSRuntimeLookupContext(void *pContext)
   { mRSRuntime.setContext(pContext); }
+#ifdef TARGET_BOARD_FIBER
   inline void setRSDefaultCompilerTriple(const char *pTriple)
   { mDefaultTriple = pTriple; }
   inline void setRSDefaultCoreLibrary(const char *pLibrary)
   { mDefaultLibrary = pLibrary; }
   void loadPlugin(const char *pLibName);
+#endif
 
   RSCompiler *getCompiler() {
     return &mCompiler;

@@ -46,6 +46,10 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES := $(libbcc_executionengine_SRC_FILES)
 
+ifeq ($(TARGET_BOARD_PLATFORM), fiber)
+    LOCAL_CFLAGS += -DTARGET_BOARD_FIBER
+endif
+
 ifeq ($(strip $(TARGET_CPU_VARIANT)),cortex-a15)
 LOCAL_CFLAGS += -DHAS_HW_DIV
 endif
@@ -72,6 +76,10 @@ LOCAL_C_INCLUDES := \
   $(RSLOADER_ROOT_PATH)/include
 
 LOCAL_SRC_FILES := $(libbcc_executionengine_SRC_FILES)
+
+ifeq ($(TARGET_BOARD_PLATFORM), fiber)
+    LOCAL_CFLAGS += -DTARGET_BOARD_FIBER
+endif
 
 include $(LIBBCC_HOST_BUILD_MK)
 include $(LIBBCC_GEN_CONFIG_MK)

@@ -23,12 +23,16 @@ namespace bcc {
 
 class RSCompiler : public Compiler {
 private:
+#ifdef TARGET_BOARD_FIBER
   virtual bool beforeAddLTOPasses(Script &pScript,
                                   llvm::PassManager &pPM,
                                   const char *mTriple);
   virtual bool beforeExecuteLTOPasses(Script &pScript,
                                       llvm::PassManager &pPM,
                                       const char *mTriple);
+#else
+  virtual bool beforeAddLTOPasses(Script &pScript, llvm::PassManager &pPM);
+#endif
   bool addInternalizeSymbolsPass(Script &pScript, llvm::PassManager &pPM);
   bool addExpandForEachPass(Script &pScript, llvm::PassManager &pPM);
 };

@@ -24,7 +24,9 @@
 #include "bcc/ExecutionEngine/SymbolResolverProxy.h"
 
 #include <utils/String8.h>
+#ifdef TARGET_BOARD_FIBER
 #include <utils/FileMap.h>
+#endif
 
 using namespace bcc;
 
@@ -125,6 +127,7 @@ RSExecutable *RSExecutable::Create(RSInfo &pInfo,
   return result;
 }
 
+#ifdef TARGET_BOARD_FIBER
 size_t RSExecutable::retrieveObjFileSize() const {
   return mObjFile->getSize();
 }
@@ -165,6 +168,7 @@ bool RSExecutable::retrieveObjFile(void *pDst, size_t uDataLen) {
   file_map->release();
   return true;
 }
+#endif
 
 bool RSExecutable::syncInfo(bool pForce) {
   if (!pForce && !mIsInfoDirty) {
