@@ -153,13 +153,6 @@ RSCompilerDriver::loadScript(const char *pCacheDir, const char *pResName,
   return result;
 }
 
-#ifdef TARGET_BOARD_FIBER
-void
-RSCompilerDriver::loadPlugin(const char *pLibName) {
-  llvm::PluginLoader() = pLibName;
-}
-#endif
-
 #if defined(DEFAULT_ARM_CODEGEN)
 extern llvm::cl::opt<bool> EnableGlobalMerge;
 #endif
