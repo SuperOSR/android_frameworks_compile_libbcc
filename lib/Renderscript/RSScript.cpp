@@ -76,7 +76,7 @@ bool RSScript::LinkRuntime(RSScript &pScript, const char *rt_path) {
 RSScript::RSScript(Source &pSource)
   : Script(pSource), mInfo(NULL), mCompilerVersion(0),
 #ifdef TARGET_BOARD_FIBER
-    mOptimizationLevel(kOptLvl3), mPreferredLibrary(NULL) { }
+    mOptimizationLevel(kOptLvl3), mPreferredLibrary(NULL),
 #else
     mOptimizationLevel(kOptLvl3), mLinkRuntimeCallback(NULL),
 #endif

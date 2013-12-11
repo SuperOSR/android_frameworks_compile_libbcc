@@ -32,7 +32,13 @@
 
 using namespace bcc;
 
+#ifdef TARGET_BOARD_FIBER
+bool RSCompiler::beforeAddLTOPasses(Script &pScript,
+                                    llvm::PassManager &pPM,
+                                    const char *mTriple) {
+#else
 bool RSCompiler::addInternalizeSymbolsPass(Script &pScript, llvm::PassManager &pPM) {
+#endif
   // Add a pass to internalize the symbols that don't need to have global
   // visibility.
   RSScript &script = static_cast<RSScript &>(pScript);
@@ -67,7 +73,9 @@ bool RSCompiler::addInternalizeSymbolsPass(Script &pScript, llvm::PassManager &p
     export_symbols.push_back(*export_func_iter);
   }
 
-  // Expanded foreach functions should not be internalized, too.
+  // If compiling for CPU, expanded foreach functions should not be
+  // internalized, if compiling for PVR, foreach functions should not be
+  // internalized instead, and there is no need to expand them.
   const RSInfo::ExportForeachFuncListTy &export_foreach_func =
       info->getExportForeachFuncs();
   std::vector<std::string> expanded_foreach_funcs;
@@ -76,7 +84,12 @@ bool RSCompiler::addInternalizeSymbolsPass(Script &pScript, llvm::PassManager &p
            foreach_func_end = export_foreach_func.end();
        foreach_func_iter != foreach_func_end; foreach_func_iter++) {
     std::string name(foreach_func_iter->first);
-    expanded_foreach_funcs.push_back(name.append(".expand"));
+#ifdef TARGET_BOARD_FIBER
+    if (!strncmp(mTriple, llvm::Triple::getArchTypeName(llvm::Triple::usc), 3))
+      expanded_foreach_funcs.push_back(name);
+    else
+#endif
+      expanded_foreach_funcs.push_back(name.append(".expand"));
   }
 
   // Need to wait until ForEachExpandList is fully populated to fill in
@@ -90,7 +103,16 @@ bool RSCompiler::addInternalizeSymbolsPass(Script &pScript, llvm::PassManager &p
   return true;
 }
 
+#ifdef TARGET_BOARD_FIBER
+bool RSCompiler::beforeExecuteLTOPasses(Script &pScript,
+                                        llvm::PassManager &pPM,
+                                        const char *mTriple) {
+  // Execute a pass to expand foreach-able functions
+  llvm::PassManager rs_passes;
+
+#else
 bool RSCompiler::addExpandForEachPass(Script &pScript, llvm::PassManager &pPM) {
+#endif
   // Script passed to RSCompiler must be a RSScript.
   RSScript &script = static_cast<RSScript &>(pScript);
   const RSInfo *info = script.getInfo();
@@ -108,16 +130,6 @@ bool RSCompiler::addExpandForEachPass(Script &pScript, llvm::PassManager &pPM) {
                                     pEnableStepOpt));
   if (script.getEmbedInfo())
     pPM.add(createRSEmbedInfoPass(info));
-
-  return true;
-}
-
-bool RSCompiler::beforeAddLTOPasses(Script &pScript, llvm::PassManager &pPM) {
-  if (!addExpandForEachPass(pScript, pPM))
-    return false;
-
-  if (!addInternalizeSymbolsPass(pScript, pPM))
-    return false;
 
   return true;
 }
