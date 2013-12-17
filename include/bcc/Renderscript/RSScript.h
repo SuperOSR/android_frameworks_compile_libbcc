@@ -42,10 +42,6 @@ public:
     kOptLvl3  // -O3
   };
 
-#ifdef TARGET_BOARD_FIBER
-  const char *mPreferredLibrary;
-#endif
-
 private:
   const RSInfo *mInfo;
 
@@ -54,6 +50,10 @@ private:
   OptimizationLevel mOptimizationLevel;
 
   RSLinkRuntimeCallback mLinkRuntimeCallback;
+
+#ifdef TARGET_BOARD_FIBER
+  const char *mPreferredLibrary;
+#endif
 
   bool mEmbedInfo;
 

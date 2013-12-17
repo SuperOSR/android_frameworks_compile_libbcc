@@ -61,6 +61,9 @@ public:
 
     kErrHookBeforeAddLTOPasses,
     kErrHookAfterAddLTOPasses,
+#ifdef TARGET_BOARD_FIBER
+    kErrHookBeforeExecuteLTOPasses,
+#endif
     kErrHookAfterExecuteLTOPasses,
 
     kErrHookBeforeAddCodeGenPasses,

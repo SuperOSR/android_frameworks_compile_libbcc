@@ -74,6 +74,10 @@ const char *Compiler::GetErrorString(enum ErrorCode pErrCode) {
     return "Error occurred during beforeExecuteCodeGenPasses() in subclass.";
   case kErrHookAfterExecuteCodeGenPasses:
     return "Error occurred during afterExecuteCodeGenPasses() in subclass.";
+#ifdef TARGET_BOARD_FIBER
+  case kErrHookBeforeExecuteLTOPasses:
+    return "Error occurred during beforeExecuteLTOPasses() in subclass.";
+#endif
   case kErrInvalidSource:
     return "Error loading input bitcode";
   }
@@ -188,6 +192,12 @@ enum Compiler::ErrorCode Compiler::runLTO(Script &pScript) {
     return kErrHookAfterAddLTOPasses;
   }
 
+#ifdef TARGET_BOARD_FIBER
+  if (!beforeExecuteLTOPasses(pScript, lto_passes, mTarget->getTargetTriple().data())) {
+    return kErrHookBeforeExecuteLTOPasses;
+  }
+#endif
+
   lto_passes.run(pScript.getSource().getModule());
 
   // Invoke "afterExecuteLTOPasses" before returning.
@@ -237,12 +247,6 @@ enum Compiler::ErrorCode Compiler::runCodeGen(Script &pScript,
     return kErrHookBeforeExecuteCodeGenPasses;
   }
   
-#ifdef TARGET_BOARD_FIBER
-  if (!beforeExecuteLTOPasses(pScript, lto_passes, mTarget->getTargetTriple().data())) {
-     return kErrHookBeforeExecuteLTOPasses;
-  }
-#endif
-
   // Execute the pass.
   codegen_passes.run(pScript.getSource().getModule());
 
